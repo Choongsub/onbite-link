@@ -10,10 +10,11 @@ import Sidebar, { type Folder } from "./Sidebar";
 export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFolderId?: string }) {
   const router = useRouter();
   const [folders, setFolders] = useState<Folder[]>(() => getFolders(initialBookmarks));
-  const activeFolder = getFolder(activeFolderId);
+  const sourceFolder = getFolder(activeFolderId);
+  const activeFolder = folders.find((folder) => folder.id === activeFolderId) ?? sourceFolder;
   const activeFolderName = activeFolder?.name ?? "ALL";
-  const visible = activeFolder
-    ? initialBookmarks.filter((item) => item.folder === activeFolder.name)
+  const visible = sourceFolder
+    ? initialBookmarks.filter((item) => item.folder === sourceFolder.name)
     : initialBookmarks;
 
   return (
@@ -43,6 +44,12 @@ export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFo
           onDeleteFolder={(folderId) => {
             setFolders((current) => current.filter((folder) => folder.id !== folderId));
             if (activeFolderId === folderId) router.push("/");
+          }}
+          onRenameFolder={(folderId, name) => {
+            setFolders((current) => {
+              if (current.some((folder) => folder.id !== folderId && folder.name === name)) return current;
+              return current.map((folder) => folder.id === folderId ? { ...folder, name } : folder);
+            });
           }}
         />
         <main id="main" className="min-w-0 flex-1 px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pt-14">

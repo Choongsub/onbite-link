@@ -71,18 +71,23 @@ a {
   animation: dialog-enter 180ms ease-out;
 }
 
-.folder-delete-button {
+.folder-actions {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 150ms ease, background-color 150ms ease, color 150ms ease;
+  transition: opacity 150ms ease;
+}
+
+.folder-edit-button,
+.folder-delete-button {
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 .folder-count {
   transition: opacity 150ms ease;
 }
 
-.folder-row:hover .folder-delete-button,
-.folder-row:focus-within .folder-delete-button {
+.folder-row:hover .folder-actions,
+.folder-row:focus-within .folder-actions {
   opacity: 1;
   pointer-events: auto;
 }
@@ -111,6 +116,11 @@ a {
 .folder-delete-button:hover {
   background: var(--danger-muted);
   color: var(--danger);
+}
+
+.folder-edit-button:hover {
+  background: var(--surface-muted);
+  color: var(--text);
 }
 
 .secondary-button:hover {
@@ -162,7 +172,7 @@ a {
 }
 
 @media (hover: none) {
-  .folder-delete-button {
+  .folder-actions {
     opacity: 1;
     pointer-events: auto;
   }
