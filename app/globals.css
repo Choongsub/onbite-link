@@ -19,6 +19,7 @@
   --danger: #ff3b30;
   --danger-hover: #e83228;
   --danger-muted: #fff1f0;
+  --control-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -71,6 +72,18 @@ a {
   animation: dialog-enter 180ms ease-out;
 }
 
+.link-delete-button {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.link-card:hover .link-delete-button,
+.link-card:focus-within .link-delete-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .folder-actions {
   opacity: 0;
   pointer-events: none;
@@ -114,6 +127,11 @@ a {
 }
 
 .folder-delete-button:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.link-delete-button:hover {
   background: var(--danger-muted);
   color: var(--danger);
 }
@@ -172,6 +190,7 @@ a {
 }
 
 @media (hover: none) {
+  .link-delete-button,
   .folder-actions {
     opacity: 1;
     pointer-events: auto;

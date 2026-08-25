@@ -5,8 +5,9 @@ import { initialBookmarks } from "./bookmarkData";
 import type { Bookmark } from "./LinkCard";
 
 const STORAGE_KEY = "onebite-link:bookmarks";
+const DELETED_KEY = "onebite-link:deleted-bookmarks";
 const CHANGE_EVENT = "onebite-link:bookmarks-changed";
-let cachedRaw: string | null = null;
+let cachedKey: string | null = null;
 let cachedBookmarks: Bookmark[] = initialBookmarks;
 
 function readSavedBookmarks(): Bookmark[] {
@@ -27,11 +28,26 @@ function readSavedBookmarks(): Bookmark[] {
   }
 }
 
+function readDeletedBookmarkIds(): number[] {
+  try {
+    const value: unknown = JSON.parse(window.localStorage.getItem(DELETED_KEY) ?? "[]");
+    return Array.isArray(value) ? value.filter((id): id is number => typeof id === "number") : [];
+  } catch {
+    return [];
+  }
+}
+
 function getSnapshot() {
-  const raw = window.localStorage.getItem(STORAGE_KEY) ?? "[]";
-  if (raw !== cachedRaw) {
-    cachedRaw = raw;
-    cachedBookmarks = [...initialBookmarks, ...readSavedBookmarks()];
+  const savedRaw = window.localStorage.getItem(STORAGE_KEY) ?? "[]";
+  const deletedRaw = window.localStorage.getItem(DELETED_KEY) ?? "[]";
+  const snapshotKey = `${savedRaw}\n${deletedRaw}`;
+  if (snapshotKey !== cachedKey) {
+    cachedKey = snapshotKey;
+    const deletedIds = new Set(readDeletedBookmarkIds());
+    cachedBookmarks = [
+      ...initialBookmarks.filter((bookmark) => !deletedIds.has(bookmark.id)),
+      ...readSavedBookmarks(),
+    ];
   }
   return cachedBookmarks;
 }
@@ -52,5 +68,18 @@ export function useBookmarks() {
 export function saveBookmark(bookmark: Bookmark) {
   const saved = readSavedBookmarks().filter((item) => item.url !== bookmark.url);
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...saved, bookmark]));
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
+export function deleteBookmark(bookmarkId: number) {
+  const saved = readSavedBookmarks().filter((bookmark) => bookmark.id !== bookmarkId);
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+
+  if (initialBookmarks.some((bookmark) => bookmark.id === bookmarkId)) {
+    const deletedIds = new Set(readDeletedBookmarkIds());
+    deletedIds.add(bookmarkId);
+    window.localStorage.setItem(DELETED_KEY, JSON.stringify([...deletedIds]));
+  }
+
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
