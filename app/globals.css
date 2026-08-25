@@ -16,6 +16,9 @@
   --focus: rgba(35, 131, 226, 0.28);
   --overlay: rgba(29, 29, 31, 0.36);
   --dialog-shadow: 0 18px 60px rgba(0, 0, 0, 0.16);
+  --danger: #ff3b30;
+  --danger-hover: #e83228;
+  --danger-muted: #fff1f0;
 }
 
 * {
@@ -53,6 +56,7 @@ a {
 .nav-item,
 .utility-button,
 .primary-button,
+.danger-button,
 .link-card,
 .icon-button,
 .text-action {
@@ -67,6 +71,27 @@ a {
   animation: dialog-enter 180ms ease-out;
 }
 
+.folder-delete-button {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+
+.folder-count {
+  transition: opacity 150ms ease;
+}
+
+.folder-row:hover .folder-delete-button,
+.folder-row:focus-within .folder-delete-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.folder-row:hover .folder-count,
+.folder-row:focus-within .folder-count {
+  opacity: 0;
+}
+
 .brand-link:hover,
 .nav-item:hover,
 .utility-button:hover,
@@ -77,6 +102,15 @@ a {
 
 .primary-button:hover {
   background: var(--accent-hover);
+}
+
+.danger-button:hover {
+  background: var(--danger-hover);
+}
+
+.folder-delete-button:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
 }
 
 .secondary-button:hover {
@@ -124,5 +158,16 @@ a {
   .dialog-backdrop,
   .dialog-panel {
     animation: none;
+  }
+}
+
+@media (hover: none) {
+  .folder-delete-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .folder-count {
+    opacity: 0;
   }
 }

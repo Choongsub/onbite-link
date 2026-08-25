@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { getFolder, getFolders, initialBookmarks } from "./bookmarkData";
 import Header from "./Header";
 import LinkGrid from "./LinkGrid";
 import Sidebar, { type Folder } from "./Sidebar";
 
 export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFolderId?: string }) {
+  const router = useRouter();
   const [folders, setFolders] = useState<Folder[]>(() => getFolders(initialBookmarks));
   const activeFolder = getFolder(activeFolderId);
   const activeFolderName = activeFolder?.name ?? "ALL";
@@ -34,7 +36,15 @@ export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFo
         }}
       />
       <div className="lg:flex lg:min-h-[calc(100vh-48px)]">
-        <Sidebar folders={folders} activeFolderId={activeFolderId} total={initialBookmarks.length} />
+        <Sidebar
+          folders={folders}
+          activeFolderId={activeFolderId}
+          total={initialBookmarks.length}
+          onDeleteFolder={(folderId) => {
+            setFolders((current) => current.filter((folder) => folder.id !== folderId));
+            if (activeFolderId === folderId) router.push("/");
+          }}
+        />
         <main id="main" className="min-w-0 flex-1 px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pt-14">
           <div className="mx-auto max-w-[760px]">
             <div className="mb-8">
