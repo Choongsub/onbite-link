@@ -6,16 +6,22 @@ import { getFolder, getFolders, initialBookmarks } from "./bookmarkData";
 import Header from "./Header";
 import LinkGrid from "./LinkGrid";
 import Sidebar, { type Folder } from "./Sidebar";
+import { useBookmarks } from "./bookmarkStore";
 
 export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFolderId?: string }) {
   const router = useRouter();
+  const bookmarks = useBookmarks();
   const [folders, setFolders] = useState<Folder[]>(() => getFolders(initialBookmarks));
   const sourceFolder = getFolder(activeFolderId);
   const activeFolder = folders.find((folder) => folder.id === activeFolderId) ?? sourceFolder;
   const activeFolderName = activeFolder?.name ?? "ALL";
   const visible = sourceFolder
-    ? initialBookmarks.filter((item) => item.folder === sourceFolder.name)
-    : initialBookmarks;
+    ? bookmarks.filter((item) => item.folder === sourceFolder.name)
+    : bookmarks;
+  const sidebarFolders = folders.map((folder) => {
+    const sourceName = getFolder(folder.id)?.name ?? folder.name;
+    return { ...folder, count: bookmarks.filter((bookmark) => bookmark.folder === sourceName).length };
+  });
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--text)]">
@@ -38,9 +44,9 @@ export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFo
       />
       <div className="lg:flex lg:min-h-[calc(100vh-48px)]">
         <Sidebar
-          folders={folders}
+          folders={sidebarFolders}
           activeFolderId={activeFolderId}
-          total={initialBookmarks.length}
+          total={bookmarks.length}
           onDeleteFolder={(folderId) => {
             setFolders((current) => current.filter((folder) => folder.id !== folderId));
             if (activeFolderId === folderId) router.push("/");
