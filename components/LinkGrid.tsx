@@ -4,7 +4,7 @@ export default function LinkGrid({ bookmarks, activeFolder }: { bookmarks: Bookm
   return (
     <section aria-label={`${activeFolder} 링크 목록`}>
       {bookmarks.length ? (
-        <div className="divide-y divide-[var(--border)]">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {bookmarks.map((bookmark) => <LinkCard key={bookmark.id} bookmark={bookmark} />)}
         </div>
       ) : (

@@ -1,19 +1,38 @@
+"use client";
+
+import { useState } from "react";
 import { getFolder, getFolders, initialBookmarks } from "./bookmarkData";
 import Header from "./Header";
 import LinkGrid from "./LinkGrid";
-import Sidebar from "./Sidebar";
+import Sidebar, { type Folder } from "./Sidebar";
 
 export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFolderId?: string }) {
+  const [folders, setFolders] = useState<Folder[]>(() => getFolders(initialBookmarks));
   const activeFolder = getFolder(activeFolderId);
   const activeFolderName = activeFolder?.name ?? "ALL";
-  const folders = getFolders(initialBookmarks);
   const visible = activeFolder
     ? initialBookmarks.filter((item) => item.folder === activeFolder.name)
     : initialBookmarks;
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--text)]">
-      <Header />
+      <Header
+        onCreateFolder={(name) => {
+          setFolders((current) => {
+            if (current.some((folder) => folder.name === name)) return current;
+
+            return [
+              ...current,
+              {
+                id: `folder-${Date.now()}`,
+                name,
+                count: 0,
+                color: "#0071e3",
+              },
+            ];
+          });
+        }}
+      />
       <div className="lg:flex lg:min-h-[calc(100vh-48px)]">
         <Sidebar folders={folders} activeFolderId={activeFolderId} total={initialBookmarks.length} />
         <main id="main" className="min-w-0 flex-1 px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pt-14">
