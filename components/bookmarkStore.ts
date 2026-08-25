@@ -44,9 +44,14 @@ function getSnapshot() {
   if (snapshotKey !== cachedKey) {
     cachedKey = snapshotKey;
     const deletedIds = new Set(readDeletedBookmarkIds());
+    const saved = readSavedBookmarks();
+    const savedById = new Map(saved.map((bookmark) => [bookmark.id, bookmark]));
+    const initialIds = new Set(initialBookmarks.map((bookmark) => bookmark.id));
     cachedBookmarks = [
-      ...initialBookmarks.filter((bookmark) => !deletedIds.has(bookmark.id)),
-      ...readSavedBookmarks(),
+      ...initialBookmarks
+        .filter((bookmark) => !deletedIds.has(bookmark.id))
+        .map((bookmark) => savedById.get(bookmark.id) ?? bookmark),
+      ...saved.filter((bookmark) => !initialIds.has(bookmark.id)),
     ];
   }
   return cachedBookmarks;
@@ -81,5 +86,11 @@ export function deleteBookmark(bookmarkId: number) {
     window.localStorage.setItem(DELETED_KEY, JSON.stringify([...deletedIds]));
   }
 
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
+export function updateBookmark(bookmark: Bookmark) {
+  const saved = readSavedBookmarks().filter((item) => item.id !== bookmark.id);
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...saved, bookmark]));
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }

@@ -2,25 +2,38 @@
 
 import { useState } from "react";
 import DeleteLinkDialog from "./DeleteLinkDialog";
-import { deleteBookmark } from "./bookmarkStore";
-import { ArrowIcon, TrashIcon } from "./icons";
+import EditLinkDialog from "./EditLinkDialog";
+import { deleteBookmark, updateBookmark } from "./bookmarkStore";
+import { ArrowIcon, PencilIcon, TrashIcon } from "./icons";
+import type { Folder } from "./Sidebar";
 
 export type Bookmark = { id: number; title: string; description: string; url: string; domain: string; folder: string; symbol: string; color: string; thumbnail?: string };
 
-export default function LinkCard({ bookmark }: { bookmark: Bookmark }) {
+export default function LinkCard({ bookmark, folders }: { bookmark: Bookmark; folders: Folder[] }) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   return (
     <>
       <article className="link-card relative flex min-h-[190px] flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
-        <button
-          type="button"
-          className="link-delete-button focus-ring absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-faint)] shadow-[var(--control-shadow)]"
-          onClick={() => setIsDeleteOpen(true)}
-          aria-label={`${bookmark.title} 링크 삭제`}
-        >
-          <TrashIcon className="size-4" />
-        </button>
+        <div className="link-actions absolute right-3 top-3 z-10 flex items-center gap-1">
+          <button
+            type="button"
+            className="link-edit-button focus-ring grid size-8 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-faint)] shadow-[var(--control-shadow)]"
+            onClick={() => setIsEditOpen(true)}
+            aria-label={`${bookmark.title} 링크 정보 수정`}
+          >
+            <PencilIcon className="size-4" />
+          </button>
+          <button
+            type="button"
+            className="link-delete-button focus-ring grid size-8 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text-faint)] shadow-[var(--control-shadow)]"
+            onClick={() => setIsDeleteOpen(true)}
+            aria-label={`${bookmark.title} 링크 삭제`}
+          >
+            <TrashIcon className="size-4" />
+          </button>
+        </div>
         {bookmark.thumbnail ? (
           // Dynamic Open Graph hosts cannot be enumerated in next.config.ts.
           // eslint-disable-next-line @next/next/no-img-element
@@ -52,6 +65,17 @@ export default function LinkCard({ bookmark }: { bookmark: Bookmark }) {
           onConfirm={() => {
             deleteBookmark(bookmark.id);
             setIsDeleteOpen(false);
+          }}
+        />
+      ) : null}
+      {isEditOpen ? (
+        <EditLinkDialog
+          bookmark={bookmark}
+          folders={folders}
+          onCancel={() => setIsEditOpen(false)}
+          onSave={(changes) => {
+            updateBookmark({ ...bookmark, ...changes });
+            setIsEditOpen(false);
           }}
         />
       ) : null}

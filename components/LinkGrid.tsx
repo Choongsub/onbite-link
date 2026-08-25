@@ -1,11 +1,12 @@
 import LinkCard, { type Bookmark } from "./LinkCard";
+import type { Folder } from "./Sidebar";
 
-export default function LinkGrid({ bookmarks, activeFolder }: { bookmarks: Bookmark[]; activeFolder: string }) {
+export default function LinkGrid({ bookmarks, activeFolder, folders }: { bookmarks: Bookmark[]; activeFolder: string; folders: Folder[] }) {
   return (
     <section aria-label={`${activeFolder} 링크 목록`}>
       {bookmarks.length ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {bookmarks.map((bookmark) => <LinkCard key={bookmark.id} bookmark={bookmark} />)}
+          {bookmarks.map((bookmark) => <LinkCard key={bookmark.id} bookmark={bookmark} folders={folders} />)}
         </div>
       ) : (
         <div className="grid min-h-64 place-items-center rounded-lg border border-dashed border-[var(--border)] text-center">

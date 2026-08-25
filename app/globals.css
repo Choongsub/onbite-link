@@ -40,7 +40,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -72,14 +73,19 @@ a {
   animation: dialog-enter 180ms ease-out;
 }
 
-.link-delete-button {
+.link-actions {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 150ms ease, background-color 150ms ease, color 150ms ease;
+  transition: opacity 150ms ease;
 }
 
-.link-card:hover .link-delete-button,
-.link-card:focus-within .link-delete-button {
+.link-edit-button,
+.link-delete-button {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.link-card:hover .link-actions,
+.link-card:focus-within .link-actions {
   opacity: 1;
   pointer-events: auto;
 }
@@ -136,6 +142,11 @@ a {
   color: var(--danger);
 }
 
+.link-edit-button:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
 .folder-edit-button:hover {
   background: var(--surface-muted);
   color: var(--text);
@@ -190,7 +201,7 @@ a {
 }
 
 @media (hover: none) {
-  .link-delete-button,
+  .link-actions,
   .folder-actions {
     opacity: 1;
     pointer-events: auto;

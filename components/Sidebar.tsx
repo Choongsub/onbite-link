@@ -6,7 +6,7 @@ import DeleteFolderDialog from "./DeleteFolderDialog";
 import EditFolderDialog from "./EditFolderDialog";
 import { FolderIcon, GridIcon, PencilIcon, PlusIcon, TrashIcon } from "./icons";
 
-export type Folder = { id: string; name: string; count: number; color: string };
+export type Folder = { id: string; name: string; count: number; color: string; storageName?: string };
 type Props = {
   folders: Folder[];
   activeFolderId: string;

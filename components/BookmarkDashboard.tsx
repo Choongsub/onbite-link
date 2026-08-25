@@ -20,7 +20,7 @@ export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFo
     : bookmarks;
   const sidebarFolders = folders.map((folder) => {
     const sourceName = getFolder(folder.id)?.name ?? folder.name;
-    return { ...folder, count: bookmarks.filter((bookmark) => bookmark.folder === sourceName).length };
+    return { ...folder, storageName: sourceName, count: bookmarks.filter((bookmark) => bookmark.folder === sourceName).length };
   });
 
   return (
@@ -83,7 +83,7 @@ export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFo
               </div>
               <span className="text-xs text-[var(--text-faint)]">최근 업데이트순</span>
             </div>
-            <LinkGrid bookmarks={visible} activeFolder={activeFolderName} />
+            <LinkGrid bookmarks={visible} activeFolder={activeFolderName} folders={sidebarFolders} />
           </div>
         </main>
       </div>
