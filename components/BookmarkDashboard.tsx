@@ -1,28 +1,45 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import { getFolder, getFolders, initialBookmarks } from "./bookmarkData";
 import Header from "./Header";
 import LinkGrid from "./LinkGrid";
 import Sidebar from "./Sidebar";
 
 export default function BookmarkDashboard({ activeFolderId = "ALL" }: { activeFolderId?: string }) {
-  const [bookmarks] = useState(initialBookmarks);
   const activeFolder = getFolder(activeFolderId);
   const activeFolderName = activeFolder?.name ?? "ALL";
-  const folders = getFolders(bookmarks);
-  const visible = useMemo(() => activeFolder ? bookmarks.filter((item) => item.folder === activeFolder.name) : bookmarks, [activeFolder, bookmarks]);
+  const folders = getFolders(initialBookmarks);
+  const visible = activeFolder
+    ? initialBookmarks.filter((item) => item.folder === activeFolder.name)
+    : initialBookmarks;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--text)]">
       <Header />
-      <div className="lg:flex">
-        <Sidebar folders={folders} activeFolderId={activeFolderId} total={bookmarks.length} />
-        <main id="main" className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10 lg:py-10 xl:px-12">
-          <div className="mx-auto max-w-[1440px]">
-            <div className="mb-8 flex items-end justify-between">
-              <div><p className="mb-2 text-[11px] font-bold tracking-[0.18em] text-[#ff6b4a]">MY COLLECTION</p><h1 className="text-[30px] font-[750] tracking-[-0.045em] sm:text-[36px]">{activeFolder ? activeFolder.name : "모든 링크"}</h1><p className="mt-2 text-sm text-[#8d887f]">필요할 때 꺼내 보는 나만의 작은 서랍</p></div>
-              <p className="hidden text-sm tabular-nums text-[#aaa59d] sm:block"><span className="font-semibold text-[#49463f]">{visible.length}</span> links</p>
+      <div className="lg:flex lg:min-h-[calc(100vh-48px)]">
+        <Sidebar folders={folders} activeFolderId={activeFolderId} total={initialBookmarks.length} />
+        <main id="main" className="min-w-0 flex-1 px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pt-14">
+          <div className="mx-auto max-w-[760px]">
+            <div className="mb-8">
+              <span className="mb-5 block text-[44px] leading-none" aria-hidden="true">
+                {activeFolder ? "📁" : "🔖"}
+              </span>
+              <p className="mb-2 text-xs font-semibold tracking-[0.08em] text-[var(--text-sub)]">
+                개인 링크 모음
+              </p>
+              <h1 className="text-[30px] font-bold leading-[1.2] tracking-[-0.035em] sm:text-[36px]">
+                {activeFolder ? activeFolder.name : "모든 링크"}
+              </h1>
+              <p className="mt-3 max-w-[560px] text-[15px] leading-6 text-[var(--text-sub)]">
+                읽고 싶고, 기억하고 싶은 페이지를 한곳에 모아두었어요.
+              </p>
+            </div>
+            <div className="mb-3 flex items-center justify-between border-b border-[var(--border)] pb-3">
+              <div className="flex items-center gap-2 text-sm">
+                <span className="font-medium">링크</span>
+                <span className="rounded bg-[var(--surface-muted)] px-2 py-0.5 text-xs tabular-nums text-[var(--text-sub)]">
+                  {visible.length}
+                </span>
+              </div>
+              <span className="text-xs text-[var(--text-faint)]">최근 업데이트순</span>
             </div>
             <LinkGrid bookmarks={visible} activeFolder={activeFolderName} />
           </div>

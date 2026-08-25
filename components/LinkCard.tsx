@@ -4,17 +4,24 @@ export type Bookmark = { id: number; title: string; description: string; url: st
 
 export default function LinkCard({ bookmark }: { bookmark: Bookmark }) {
   return (
-    <article className="group flex min-h-[222px] flex-col rounded-[22px] border border-[#e6e1d8] bg-white p-5 shadow-[0_2px_0_rgba(30,29,26,.02)] transition duration-300 hover:-translate-y-1 hover:border-[#d8d1c7] hover:shadow-[0_16px_35px_rgba(45,39,29,.08)]">
-      <div className="flex items-start justify-between">
-        <div className="grid size-11 place-items-center rounded-[13px] text-lg font-extrabold" style={{ backgroundColor: `${bookmark.color}18`, color: bookmark.color }} aria-hidden="true">{bookmark.symbol}</div>
-        <button className="grid size-8 place-items-center rounded-full text-[#aaa59d] transition hover:bg-[#f4f1eb] hover:text-[#1e1d1a]" aria-label={`${bookmark.title} 메뉴`}><MoreIcon className="size-[18px]" /></button>
+    <article className="link-row flex items-center gap-3 rounded-md px-2 py-3 sm:gap-4 sm:px-3">
+      <div className="grid size-9 shrink-0 place-items-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-sm font-semibold text-[var(--text-sub)]" aria-hidden="true">
+        {bookmark.symbol}
       </div>
-      <h2 className="mt-5 line-clamp-1 text-[16px] font-bold tracking-[-0.025em]">{bookmark.title}</h2>
-      <p className="mt-2 line-clamp-2 text-[13px] leading-[1.65] text-[#858078]">{bookmark.description}</p>
-      <div className="mt-auto flex items-end justify-between pt-5">
-        <span className="max-w-[75%] truncate text-xs font-medium text-[#aaa59d]">{bookmark.domain}</span>
-        <a href={bookmark.url} target="_blank" rel="noreferrer" className="grid size-8 place-items-center rounded-full border border-[#e6e1d8] text-[#6d6860] transition group-hover:border-[#1e1d1a] group-hover:bg-[#1e1d1a] group-hover:text-white" aria-label={`${bookmark.title} 새 창에서 열기`}><ArrowIcon className="size-4" /></a>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h2 className="truncate text-[15px] font-medium tracking-[-0.015em]">{bookmark.title}</h2>
+          <span className="hidden shrink-0 rounded bg-[var(--surface-muted)] px-1.5 py-0.5 text-[11px] text-[var(--text-sub)] sm:inline">{bookmark.folder}</span>
+        </div>
+        <p className="mt-0.5 truncate text-[13px] leading-5 text-[var(--text-sub)]">{bookmark.description}</p>
+        <p className="mt-1 truncate text-xs text-[var(--text-faint)]">{bookmark.domain}</p>
       </div>
+      <button className="icon-button focus-ring hidden size-8 shrink-0 place-items-center rounded-md text-[var(--text-faint)] sm:grid" aria-label={`${bookmark.title} 메뉴`}>
+        <MoreIcon className="size-4" />
+      </button>
+      <a href={bookmark.url} target="_blank" rel="noreferrer" className="focus-ring grid size-8 shrink-0 place-items-center rounded-md text-[var(--text-faint)]" aria-label={`${bookmark.title} 새 창에서 열기`}>
+        <ArrowIcon className="link-arrow size-4 opacity-60 transition-opacity" />
+      </a>
     </article>
   );
 }

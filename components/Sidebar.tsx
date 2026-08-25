@@ -5,23 +5,37 @@ export type Folder = { id: string; name: string; count: number; color: string };
 type Props = { folders: Folder[]; activeFolderId: string; total: number };
 
 export default function Sidebar({ folders, activeFolderId, total }: Props) {
-  const itemClass = (selected: boolean) => `flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${selected ? "bg-[#1e1d1a] font-semibold text-white shadow-sm" : "text-[#625f58] hover:bg-white hover:text-[#1e1d1a]"}`;
+  const itemClass = (selected: boolean) =>
+    `nav-item focus-ring flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm ${
+      selected
+        ? "bg-[var(--surface-hover)] font-medium text-[var(--text)]"
+        : "text-[var(--text-sub)]"
+    }`;
+
   return (
-    <aside className="border-b border-[#e6e1d8] px-4 py-5 lg:min-h-[calc(100vh-82px)] lg:w-[244px] lg:shrink-0 lg:border-r lg:border-b-0 lg:px-5 lg:py-8">
-      <nav aria-label="북마크 폴더" className="flex gap-2 overflow-x-auto lg:block lg:space-y-1">
+    <aside className="border-b border-[var(--border)] bg-[var(--sidebar)] px-3 py-3 lg:w-[240px] lg:shrink-0 lg:border-b-0 lg:border-r lg:px-2.5 lg:py-4">
+      <nav aria-label="북마크 폴더" className="flex gap-1 overflow-x-auto lg:block lg:space-y-0.5">
         <Link href="/" aria-current={activeFolderId === "ALL" ? "page" : undefined} className={`${itemClass(activeFolderId === "ALL")} min-w-fit lg:min-w-0`}>
-          <GridIcon className="size-[18px]" /><span className="flex-1">ALL</span><span className={`text-xs ${activeFolderId === "ALL" ? "text-white/55" : "text-[#aaa59d]"}`}>{total}</span>
+          <GridIcon className="size-4 shrink-0" />
+          <span className="flex-1">모든 링크</span>
+          <span className="text-xs tabular-nums text-[var(--text-faint)]">{total}</span>
         </Link>
-        <div className="mx-3 my-5 hidden h-px bg-[#e6e1d8] lg:block" />
-        <p className="mb-2 hidden px-3 text-[10px] font-bold tracking-[0.18em] text-[#aaa59d] lg:block">FOLDERS</p>
+        <p className="mb-1 mt-6 hidden px-2.5 text-[11px] font-semibold text-[var(--text-faint)] lg:block">PRIVATE</p>
         {folders.map((folder) => (
           <Link key={folder.id} href={`/foler/${folder.id}`} aria-current={activeFolderId === folder.id ? "page" : undefined} className={`${itemClass(activeFolderId === folder.id)} min-w-fit lg:min-w-0`}>
-            <FolderIcon className="size-[18px]" style={{ color: activeFolderId === folder.id ? "white" : folder.color }} /><span className="flex-1">{folder.name}</span><span className={`text-xs ${activeFolderId === folder.id ? "text-white/55" : "text-[#aaa59d]"}`}>{folder.count}</span>
+            <FolderIcon className="size-4 shrink-0" />
+            <span className="flex-1">{folder.name}</span>
+            <span className="text-xs tabular-nums text-[var(--text-faint)]">{folder.count}</span>
           </Link>
         ))}
       </nav>
-      <button className="mt-6 hidden w-full items-center gap-2.5 px-3 text-sm font-medium text-[#9b968e] transition hover:text-[#ff6b4a] lg:flex"><PlusIcon className="size-4" /> 폴더 추가</button>
-      <div className="mt-12 hidden rounded-2xl border border-[#e6e1d8] bg-white/60 p-4 lg:block"><p className="text-xs font-semibold text-[#615d55]">오늘의 정리 팁</p><p className="mt-1.5 text-xs leading-5 text-[#918c83]">다시 볼 링크만 남기면<br />생각도 가벼워져요.</p></div>
+      <Link href="/new" className="utility-button focus-ring mt-1 hidden w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-[var(--text-sub)] lg:flex">
+        <PlusIcon className="size-4" /> 새 페이지
+      </Link>
+      <div className="mt-8 hidden border-t border-[var(--border)] px-2.5 pt-4 lg:block">
+        <p className="text-xs font-medium text-[var(--text-sub)]">정리 팁</p>
+        <p className="mt-1 text-xs leading-5 text-[var(--text-faint)]">다시 찾을 링크만 남겨두면 목록이 더 선명해져요.</p>
+      </div>
     </aside>
   );
 }
