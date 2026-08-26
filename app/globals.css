@@ -197,10 +197,23 @@ a {
   background: var(--accent-hover);
 }
 
+.auth-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.auth-submit:disabled:hover {
+  background: var(--accent);
+}
+
 .auth-text-link:hover {
   color: var(--accent-hover);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.auth-toast {
+  animation: auth-toast-enter 180ms ease-out;
 }
 
 .focus-ring:focus-visible {
@@ -219,9 +232,18 @@ a {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes auth-toast-enter {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dialog-backdrop,
   .dialog-panel {
+    animation: none;
+  }
+
+  .auth-toast {
     animation: none;
   }
 }
