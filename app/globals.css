@@ -177,6 +177,32 @@ a {
   text-underline-offset: 3px;
 }
 
+.auth-brand,
+.auth-submit,
+.auth-text-link,
+.auth-input {
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.auth-brand:hover {
+  background: var(--surface-muted);
+}
+
+.auth-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.auth-submit:hover {
+  background: var(--accent-hover);
+}
+
+.auth-text-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .focus-ring:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
