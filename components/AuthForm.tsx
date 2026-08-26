@@ -179,6 +179,14 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           </button>
         </form>
 
+        {!isSignup ? (
+          <p className="mt-4 text-center text-sm">
+            <Link href="/forgot-password" className="auth-text-link focus-ring rounded px-1 py-1 font-semibold text-[var(--accent)]">
+              비밀번호 찾기
+            </Link>
+          </p>
+        ) : null}
+
         <p className="mt-7 text-center text-sm text-[var(--text-sub)]">
           {copy.prompt}{" "}
           <Link href={copy.linkHref} className="auth-text-link focus-ring rounded px-1 py-1 font-semibold text-[var(--accent)]">
