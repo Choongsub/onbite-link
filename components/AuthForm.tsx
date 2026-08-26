@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useState, type FormEvent } from "react";
 import { loginWithPassword } from "@/app/login/actions";
 import { createClient } from "@/utils/supabase/client";
@@ -91,6 +92,28 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     }
   }
 
+  async function handleKakaoLogin() {
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "kakao",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=/`,
+        },
+      });
+
+      if (error) {
+        setErrorMessage("카카오 로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        setIsSubmitting(false);
+      }
+    } catch {
+      setErrorMessage("카카오 로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--background)] px-6 py-14 text-[var(--text)] sm:px-8">
       <section className="w-full max-w-[420px]" aria-labelledby="auth-title">
@@ -177,6 +200,17 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           >
             {isSubmitting ? (isSignup ? "가입 중..." : "로그인 중...") : copy.button}
           </button>
+          {!isSignup ? (
+            <button
+              type="button"
+              disabled={isSubmitting}
+              onClick={handleKakaoLogin}
+              className="mt-3 block w-full overflow-hidden rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              aria-label="카카오로 로그인"
+            >
+              <Image src="/kakao_login_medium_wide.png" alt="카카오로 로그인" width={300} height={45} className="block h-auto w-full" priority />
+            </button>
+          ) : null}
         </form>
 
         {!isSignup ? (
