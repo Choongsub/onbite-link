@@ -38,12 +38,12 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const canSubmitSignup = Boolean(email.trim() && password && passwordConfirm) && !isSubmitting;
+  const canSubmit = Boolean(email.trim() && password && (!isSignup || passwordConfirm)) && !isSubmitting;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!isSignup || !canSubmitSignup) return;
+    if (!canSubmit) return;
 
     setErrorMessage(null);
 
@@ -52,7 +52,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       return;
     }
 
-    if (password !== passwordConfirm) {
+    if (isSignup && password !== passwordConfirm) {
       setErrorMessage("비밀번호가 일치하지 않습니다.");
       return;
     }
@@ -60,20 +60,31 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-      });
+      const { error } = isSignup
+        ? await supabase.auth.signUp({
+            email: email.trim(),
+            password,
+          })
+        : await supabase.auth.signInWithPassword({
+            email: email.trim(),
+            password,
+          });
 
       if (error) {
-        setErrorMessage(getKoreanSignUpError(error.code, error.message));
+        setErrorMessage(
+          isSignup
+            ? getKoreanSignUpError(error.code, error.message)
+            : getKoreanLoginError(error.code),
+        );
         return;
       }
 
-      router.push("/");
+      router.replace("/");
       router.refresh();
     } catch {
-      setErrorMessage("회원가입 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      setErrorMessage(
+        `${isSignup ? "회원가입" : "로그인"} 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.`,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -158,11 +169,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           ) : null}
 
           <button
-            type={isSignup ? "submit" : "button"}
-            disabled={isSignup ? !canSubmitSignup : false}
+            type="submit"
+            disabled={!canSubmit}
             className="auth-submit focus-ring mt-2 h-12 w-full rounded-full bg-[var(--accent)] px-6 text-[16px] font-semibold text-white"
           >
-            {isSignup && isSubmitting ? "가입 중..." : copy.button}
+            {isSubmitting ? (isSignup ? "가입 중..." : "로그인 중...") : copy.button}
           </button>
         </form>
 
@@ -208,5 +219,22 @@ function getKoreanSignUpError(code: string | undefined, message: string) {
       }
 
       return "회원가입에 실패했습니다. 입력 내용을 확인하고 다시 시도해 주세요.";
+  }
+}
+
+function getKoreanLoginError(code: string | undefined) {
+  switch (code) {
+    case "invalid_credentials":
+      return "이메일 또는 비밀번호가 올바르지 않습니다.";
+    case "email_not_confirmed":
+      return "이메일 인증을 완료한 후 로그인해 주세요.";
+    case "user_banned":
+      return "사용이 제한된 계정입니다. 관리자에게 문의해 주세요.";
+    case "over_request_rate_limit":
+      return "로그인 요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+    case "validation_failed":
+      return "이메일과 비밀번호를 다시 확인해 주세요.";
+    default:
+      return "로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.";
   }
 }
