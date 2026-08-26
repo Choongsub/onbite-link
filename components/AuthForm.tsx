@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
+import { loginWithPassword } from "@/app/login/actions";
 import { createClient } from "@/utils/supabase/client";
 
 type AuthMode = "login" | "signup";
@@ -31,7 +31,6 @@ const content = {
 export default function AuthForm({ mode }: { mode: AuthMode }) {
   const copy = content[mode];
   const isSignup = mode === "signup";
-  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,27 +59,29 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     setIsSubmitting(true);
 
     try {
-      const { error } = isSignup
-        ? await supabase.auth.signUp({
-            email: email.trim(),
-            password,
-          })
-        : await supabase.auth.signInWithPassword({
-            email: email.trim(),
-            password,
-          });
+      if (!isSignup) {
+        const loginError = await loginWithPassword({ email, password });
 
-      if (error) {
-        setErrorMessage(
-          isSignup
-            ? getKoreanSignUpError(error.code, error.message)
-            : getKoreanLoginError(error.code),
-        );
+        if (loginError) {
+          setErrorMessage(getKoreanLoginError(loginError));
+          return;
+        }
+
+        window.location.replace("/");
         return;
       }
 
-      router.replace("/");
-      router.refresh();
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(getKoreanSignUpError(error.code, error.message));
+        return;
+      }
+
+      window.location.replace("/");
     } catch {
       setErrorMessage(
         `${isSignup ? "회원가입" : "로그인"} 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.`,
@@ -95,6 +96,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       <section className="w-full max-w-[420px]" aria-labelledby="auth-title">
         <Link
           href="/"
+          prefetch={false}
           className="auth-brand focus-ring mx-auto mb-12 flex w-fit items-center gap-2.5 rounded-full px-2 py-1.5"
           aria-label="한입 링크 홈"
         >
